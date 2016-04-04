@@ -104,8 +104,75 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = '/static_root/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static')
+    os.path.join(BASE_DIR, 'static'),
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = ''
+
+# Logging
+
+# Levels
+# - DEBUG: Low level system information for debugging purposes
+# - INFO: General system information
+# - WARNING: Information describing a minor problem that has occurred.
+# - ERROR: Information describing a major problem that has occurred.
+# - CRITICAL: Information describing a critical problem that has occurred.
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s > %(message)s',
+        },
+        'default': {
+            'format': '%(levelname)s %(asctime)s %(module)s > %(message)s',
+        },
+        'simple': {
+            'format': '%(levelname)s > %(message)s',
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'logfile': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/django/debug.log',
+            'backupCount': 2,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            # 'handlers': ['mail_admins'],
+            'handlers': ['console', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.request': {
+            # 'handlers': ['mail_admins'],
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'log': {
+            'handlers': ['logfile'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}
