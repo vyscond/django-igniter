@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'utils',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -151,21 +152,19 @@ LOGGING = {
         'logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/django/debug.log',
+            'filename': 'logs/django_debug.log',
             'backupCount': 2,
             'formatter': 'verbose',
         },
     },
     'loggers': {
         'django': {
-            # 'handlers': ['mail_admins'],
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['mail_admins', 'console'],
             'level': 'ERROR',
             'propagate': True,
         },
         'django.request': {
-            # 'handlers': ['mail_admins'],
-            'handlers': ['console'],
+            'handlers': ['mail_admins', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
