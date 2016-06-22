@@ -24,9 +24,12 @@ SECRET_KEY = 'y^u#jvr3w523t&1)i4t$v2928tjndwx9_l1m9$c9kgca!=7)05'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+DEBUG_PROPAGATE_EXCEPTIONS = DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+PROJECT_NAME = 'Django Igniter'
+PROJECT_NAME_NORMALIZED = PROJECT_NAME.lower().replace(' ', '_')
 
 # Application definition
 
@@ -37,7 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'utils',
+    'utilities',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -61,6 +64,7 @@ TEMPLATES = [
         ],
         'APP_DIRS': True,
         'OPTIONS': {
+            'debug': DEBUG,
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -169,9 +173,44 @@ LOGGING = {
             'propagate': True,
         },
         'log': {
-            'handlers': ['logfile'],
+            'handlers': ['logfile', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
     }
 }
+
+WSGI = {
+    'bind': '0.0.0.0:5000',
+    'workers': 1,
+    'timeout': 10000,
+    'pid': '/tmp/{}.pid'.format(PROJECT_NAME_NORMALIZED),
+    'access-logfile': '/tmp/{}_access.log'.format(PROJECT_NAME_NORMALIZED),
+    'error-logfile': '/tmp/{}_error.log'.format(PROJECT_NAME_NORMALIZED),
+}
+from collections import OrderedDict
+
+SYSTEMD = OrderedDict({
+    'Unit': {
+        'Description': 'Django App',
+        'After': 'network.target',
+    },
+    'Service': {
+        'User': 'http',
+        'PIDFile': 'tmp/django.pid',
+        'WorkingDirectory': BASE_DIR,
+        'Environment': {
+            'DJANGO_SETTINGS_MODULE': 'cfg.settings',
+            'VIRTUAL_ENV': os.path.join(BASE_DIR, 'env'),
+            'PATH': '$VIRTUAL_ENV/bin:$PATH',
+        },
+        'ExecStart': '{} cfg.wsgi -b 0.0.0.0:5000'.format(
+            os.path.join(BASE_DIR, 'env/bin/gunicorn')
+        ),
+        'ExecReload': '/bin/kill -s HUP $MAINPID',
+        'ExecStop': '/bin/kill -s HUP $MAINPID',
+    },
+    'Install': {
+        'WantedBy': 'multi-user.target'
+    }
+})

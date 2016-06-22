@@ -1,1 +1,3 @@
 ipython
+flake8
+django-extensions

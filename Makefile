@@ -18,16 +18,18 @@ COMMON = $(REQUIREMENTS)/common.txt
 DEVELOPMENT = $(REQUIREMENTS)/development.txt
 
 setup:
-	
+
 ifeq ($(shell which pyvenv),)
 	virtualenv -p python3 $(VIRTUAL_ENV)
 else
 	pyvenv env
 endif
-	
+
+ifeq ($(env),'development')
+	@echo 'setup development'
 	$(eval username ?= vyscond)
 	$(eval email ?= vyscond@gmail.com)
-	
+
 	source env/bin/activate && \
 	pip install pip --upgrade && \
 	pip install -r $(COMMON) && \
@@ -35,6 +37,9 @@ endif
 	python manage.py migrate && \
 	echo 'Password to new superuser' && \
 	python manage.py createsuperuser --username $(username) --email $(email)
+else ifeq($(env),'production')
+	@echo 'setup production'
+endif
 
 lint:
 	$(lint) $(app)

@@ -1,28 +1,38 @@
-# django-igniter
+# django-igniter (alpha as fuck)
 
 Simple base django project to win the brave new world!
 
-## Install
+## Makefile commands
+
+There is a lot of useful commands included on the `Makefile` and the `utilities` package.
+
+### Setup
 
 ```
-git clone https://www.github.com/vyscond/django-igniter my_new_project
-cd my_new_project
-make setup username=my_admin_username email=admin@email.com
+git clone https://www.github.com/vyscond/django-igniter [project]
+cd [project]
+make setup username=admin_username email=admin@email.com
 ```
 
-## Run
-
-You can run it python the built-in server
+### running django's built-in server
 
 ```
 make run
 ```
 
-Or if you have installed gunicorn
+### running django with wsgi
 
 ```
-make gunicorn
+make wsgi
 ```
+
+### running  app="[app_name]"
+
+```
+make lint
+```
+
+### running
 
 ## LICENSE
 MIT
